@@ -1,12 +1,12 @@
 using Basket.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var con = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
 // Add services to the container.
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetValue<string>("CacheSetting:ConnectionString");
+    options.Configuration = con;
 });
 
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
