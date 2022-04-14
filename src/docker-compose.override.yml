@@ -57,3 +57,14 @@ services:
       - "5050:80"
     volumes:
       - pgadmin_data:/root/.pgadmin/
+  
+  discount.api:
+    container_name: discount.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString:Server=DiscountServer;Port=5432;Database=Discount;User Id=admin;Password=123;"
+    depends_on:
+      - discountdb
+    ports:
+      - "8002:80"
+
