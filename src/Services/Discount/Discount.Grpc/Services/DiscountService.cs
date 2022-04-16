@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Discount.Grpc.Entities;
 using Discount.Grpc.Protos;
 using Discount.Grpc.Repositories;
 using Grpc.Core;
@@ -36,16 +37,37 @@ namespace Discount.Grpc.Services
             if (coupon is null)
                 throw new RpcException(new Status(statusCode: StatusCode.NotFound, $"Discount with product name = \"{request.ProductName}\" not found."));
 
-            //return new CouponModel
-            //{
-            //    Id = coupon.Id,
-            //    ProductName = coupon.ProductName,
-            //    Description = coupon.Description,
-            //    Amount = coupon.Amount
-            //};
-            //_logger.LogInformation("Discount is retrieved for ProductName : {productName}, Amount : {amount}", coupon.ProductName, coupon.Amount);
             _logger.LogInformation($"Discount is retrieved for ProductName : {coupon.ProductName}, Amount {coupon.Amount}");
             return _mapper.Map<CouponModel>(coupon);
+        }
+
+        public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
+        {
+            var coupon = _mapper.Map<Coupon>(request.Coupon);
+
+            await _repository.CreateDiscount(coupon);
+            _logger.LogInformation("Discount is successfully created. ProductName : {ProductName}", coupon.ProductName);
+
+            return _mapper.Map<CouponModel>(coupon);
+        }
+
+        public override async Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
+        {
+            var coupon = _mapper.Map<Coupon>(request.Coupon);
+
+            await _repository.UpdateDiscount(coupon);
+            _logger.LogInformation("Discount is successfully updated. ProductName : {ProductName}", coupon.ProductName);
+
+            return _mapper.Map<CouponModel>(coupon);
+        }
+
+        public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
+        {
+            var deleted = await _repository.DeleteDiscount(request.ProductName);
+            return new DeleteDiscountResponse
+            {
+                Success = deleted
+            };
         }
 
         #endregion
