@@ -1,4 +1,6 @@
+using Basket.Api.GrpcServices;
 using Basket.Api.Repositories;
+using Discount.Grpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 var con = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
@@ -10,6 +12,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
+    (option => option.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]));
+
+builder.Services.AddGrpcClient<DiscountGrpcServices>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
