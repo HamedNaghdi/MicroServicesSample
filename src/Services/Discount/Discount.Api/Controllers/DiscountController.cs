@@ -38,9 +38,6 @@ namespace Discount.Api.Controllers
         [ProducesResponseType(typeof(Coupon), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Coupon>> UpdateDiscount([FromBody] Coupon coupon)
         {
-            // TODO: Communicate with Discount.Grpc
-            // and calculate latest prices of product into shopping cart.
-
             return Ok(await _repository.UpdateDiscount(coupon));
         }
 

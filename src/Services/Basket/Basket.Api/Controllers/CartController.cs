@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Basket.Api.Entities;
+using Basket.Api.GrpcServices;
 using Basket.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,14 +14,16 @@ public class CartController : ControllerBase
     #region Fields
 
     private readonly IShoppingCartRepository _cartRepository;
+    private readonly DiscountGrpcServices _discountGrpcServices;
 
     #endregion
 
     #region Ctor
 
-    public CartController(IShoppingCartRepository cartRepository)
+    public CartController(IShoppingCartRepository cartRepository, DiscountGrpcServices discountGrpcServices)
     {
         _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
+        _discountGrpcServices = discountGrpcServices ?? throw new ArgumentNullException(nameof(discountGrpcServices));
     }
 
     #endregion
@@ -37,6 +40,16 @@ public class CartController : ControllerBase
     [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<ShoppingCart>> UpdateCart([FromBody] ShoppingCart cart)
     {
+        // TODO: Communicate with Discount.Grpc
+        // and calculate latest prices of product into shopping cart.
+        // consume Discount Grpc
+
+        foreach (var item in cart.Items)
+        {
+            var coupon = await _discountGrpcServices.GetDiscount(item.ProductName);
+            item.Price -= coupon.Amount;
+        }
+
         return Ok(await _cartRepository.UpdateCart(cart));
     }
 
