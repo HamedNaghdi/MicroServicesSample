@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Ordering.Application.Behaviours;
 
-public class UnhandeledValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class UnhandledValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly ILogger _logger;
 
-    public UnhandeledValidationBehaviour(ILogger logger)
+    public UnhandledValidationBehaviour(ILogger logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
