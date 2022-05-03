@@ -1,5 +1,7 @@
+using Ordering.Api.Extenstions;
 using Ordering.Application;
 using Ordering.Infrastructure;
+using Ordering.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MigrateDatabase<OrderContext>((context, service) => 
+{
+    var logger = service.GetService<ILogger<OrderContextSeed>>();
+    OrderContextSeed.SeedAsyn(context, logger).Wait();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
