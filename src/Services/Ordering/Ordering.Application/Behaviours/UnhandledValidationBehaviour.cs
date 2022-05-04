@@ -5,9 +5,9 @@ namespace Ordering.Application.Behaviours;
 
 public class UnhandledValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<TRequest> _logger;
 
-    public UnhandledValidationBehaviour(ILogger logger)
+    public UnhandledValidationBehaviour(ILogger<TRequest> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
