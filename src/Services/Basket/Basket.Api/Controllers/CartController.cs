@@ -1,7 +1,10 @@
 ﻿using System.Net;
+using AutoMapper;
 using Basket.Api.Entities;
 using Basket.Api.GrpcServices;
 using Basket.Api.Repositories;
+using EventBus.Messages.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Basket.Api.Controllers;
@@ -15,15 +18,22 @@ public class CartController : ControllerBase
 
     private readonly IShoppingCartRepository _cartRepository;
     private readonly DiscountGrpcServices _discountGrpcServices;
+    private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     #endregion
 
     #region Ctor
 
-    public CartController(IShoppingCartRepository cartRepository, DiscountGrpcServices discountGrpcServices)
+    public CartController(IShoppingCartRepository cartRepository,
+        DiscountGrpcServices discountGrpcServices,
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint)
     {
         _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
         _discountGrpcServices = discountGrpcServices ?? throw new ArgumentNullException(nameof(discountGrpcServices));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
     }
 
     #endregion
@@ -55,9 +65,36 @@ public class CartController : ControllerBase
 
     [HttpDelete("{username}", Name = "DeleteCart")]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult> DeleteCart(string username)
+    public async Task<IActionResult> DeleteCart(string username)
     {
         await _cartRepository.DeleteCart(username);
         return Ok();
+    }
+
+    [HttpPost]
+    [Route("[action]")]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> Checkout([FromBody] CartCheckout cartCheckout)
+    {
+        // get existing cart with total price
+        // create cart checkout event -- set total price on cart checkout event message
+        // send checkout event to rabitMQ
+        // remove the cart
+        
+        // get existing basket with total price
+        var cart = await _cartRepository.GetCart(cartCheckout.Username);
+        if (cart is null)
+            return BadRequest();
+
+        // send checkout event to rabbitmq
+        var eventMessage = _mapper.Map<CartCheckoutEvent>(cartCheckout);
+        eventMessage.TotalPrice = cart.TotalPrice;
+        await _publishEndpoint.Publish(eventMessage);
+
+        // remove the basket
+        await _cartRepository.DeleteCart(cart.Username);
+
+        return Accepted();
     }
 }

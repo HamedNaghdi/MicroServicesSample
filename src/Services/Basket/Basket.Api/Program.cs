@@ -14,6 +14,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 //General configuration
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 //Grpc configuration
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
