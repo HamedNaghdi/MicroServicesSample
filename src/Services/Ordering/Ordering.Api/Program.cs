@@ -28,7 +28,9 @@ builder.Services.AddMassTransit(configure: config =>
 });
 builder.Services.AddMassTransitHostedService();
 
-
+// General Configuration
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<CartCheckoutConsumer>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
