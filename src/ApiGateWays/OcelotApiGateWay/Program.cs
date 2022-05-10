@@ -9,6 +9,11 @@ builder.Logging.AddDebug();
 
 builder.Services.AddOcelot();
 
+builder.Host.ConfigureAppConfiguration((hostBuilderContext, config) =>
+{
+    config.AddJsonFile($"ocelot.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json", true, true);
+});
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
