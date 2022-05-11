@@ -52,7 +52,7 @@
       "UpstreamHttpMethod": [ "GET", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/api/v1/Basket",
+      "DownstreamPathTemplate": "/api/v1/Cart",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

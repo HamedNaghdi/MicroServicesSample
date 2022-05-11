@@ -49,9 +49,16 @@ services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
 
+  ocelotapigateway:
+    image: ${DOCKER_REGISTRY-}ocelotapigateway
+    build:
+      context: .
+      dockerfile: ApiGateWays/OcelotApiGateWay/Dockerfile
+
 volumes:
   mongo_data:
   postgres_data:
   pgadmin_data:
+
 
 
