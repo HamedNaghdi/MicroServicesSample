@@ -4,5 +4,5 @@ namespace Shopping.Aggregator.Services;
 
 public interface IOrderService
 {
-    Task<IEnumerable<OrderResponseModel>> GetOrdersByUsername(string username);
+    Task<IEnumerable<OrderResponseModel>?> GetOrdersByUsername(string username);
 }

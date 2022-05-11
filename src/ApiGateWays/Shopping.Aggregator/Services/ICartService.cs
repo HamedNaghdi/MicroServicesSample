@@ -4,5 +4,5 @@ namespace Shopping.Aggregator.Services;
 
 public interface ICartService
 {
-    Task<CartModel> GetCart(string username);
+    Task<CartModel?> GetCart(string username);
 }
