@@ -55,10 +55,17 @@ services:
       context: .
       dockerfile: ApiGateWays/OcelotApiGateWay/Dockerfile
 
+  shopping.aggregator:
+    image: ${DOCKER_REGISTRY-}shoppingaggregator
+    build:
+      context: .
+      dockerfile: ApiGateWays/Shopping.Aggregator/Dockerfile
+
 volumes:
   mongo_data:
   postgres_data:
   pgadmin_data:
+
 
 
 
